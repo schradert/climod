@@ -1,5 +1,0 @@
-{ ... }: {
-  # TODO: implement completions
-  imports = [
-  ];
-}

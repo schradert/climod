@@ -1,11 +1,8 @@
-{ lib
-, config
-, ...
-}:
+{lib, ...}:
+with lib;
+with types;
 let
-  inherit (lib) types mkOption;
-  inherit (types) str strMatching attrsOf listOf submodule nullOr nonEmptyListOf bool;
-  flag = submodule ({config, ...}: {
+  flag = submodule {
     options = {
       keywords = mkOption {
         type = nonEmptyListOf (strMatching "-[a-zA-Z0-9]|-(-[a-z0-9]*)");
@@ -32,7 +29,7 @@ let
         default = false;
       };
     };
-  });
+  };
   command = {
     name = mkOption {
       type = strMatching "[a-zA-Z0-9_][a-zA-Z0-9_\\-]*";
@@ -52,7 +49,10 @@ let
     subcommands = mkOption {
       type = attrsOf (submodule ({name, ...}: {
         options = command;
-        config = { inherit name; }; 
+        config = {
+          inherit name;
+          flags = [help];
+        };
       }));
       default = {};
       description = "Subcommands has all the attributes of commands, even subcommands...";
@@ -63,14 +63,17 @@ let
       description = "Allow the command to receive unmatched arguments";
     };
     action = mkOption {
-      type = attrsOf str;
-      default = {
-        bash = "exit 0";
-        c = "exit(0);";
-      };
-      description = "Attr of the action code itself of the command or subcommand for each language that you want to support";
+      type = str;
+      default = "exit 0";
+      description = "Code unique to this endpoint";
     };
+  };
+  help = {
+    keywords = ["-h" "--help"];
+    description = "Show this help message";
+    variable = "HELP";
   };
 in {
   options = command;
+  config.flags = [help];
 }

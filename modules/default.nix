@@ -1,8 +1,3 @@
-{config, ...}:
 {
-  imports = [
-    ./common.nix
-    ./generators
-    ./completions
-  ];
+  imports = [./code.nix ./commands.nix ./target.nix];
 }
